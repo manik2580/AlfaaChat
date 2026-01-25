@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>AlfaaChat | Elegant Intelligence by AlfaaX</title>
+    <script type="importmap">
+      {
+        "imports": {
+          "react": "https://esm.sh/react@18.2.0",
+          "react-dom": "https://esm.sh/react-dom@18.2.0",
+          "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+          "react/jsx-runtime": "https://esm.sh/react@18.2.0/jsx-runtime",
+          "react/jsx-dev-runtime": "https://esm.sh/react@18.2.0/jsx-dev-runtime",
+          "@google/genai": "https://esm.sh/@google/genai",
+          "react-markdown": "https://esm.sh/react-markdown@9.0.1?deps=react@18.2.0",
+          "remark-gfm": "https://esm.sh/remark-gfm@4.0.0",
+          "rehype-raw": "https://esm.sh/rehype-raw@7.0.0",
+          "rehype-highlight": "https://esm.sh/rehype-highlight@7.0.0",
+          "lucide-react": "https://esm.sh/lucide-react@0.344.0?deps=react@18.2.0"
+        }
+      }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lora:ital,wght@0,400;0,500;1,400&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/ia-light.min.css">
+    <style>
+      :root {
+        --ivory: #FCF8F3;
+        --charcoal: #171717;
+        --oxford-blue: #002147;
+        --paper-border: #E8E2D9;
+      }
+      body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background-color: var(--ivory);
+        color: var(--charcoal);
+        overflow: hidden;
+        overscroll-behavior-y: none;
+      }
+      .serif-heading {
+        font-family: 'Playfair Display', serif;
+      }
+      .serif-body {
+        font-family: 'Lora', serif;
+      }
+      .paper-texture {
+        background-color: var(--ivory);
+        background-image: url("https://www.transparenttextures.com/patterns/soft-wallpaper.png");
+      }
+      /* Prevent zoom on input focus for iOS */
+      input, textarea {
+        font-size: 16px !important;
+      }
+      ::-webkit-scrollbar {
+        width: 4px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #D1CBC3;
+        border-radius: 10px;
+      }
+      .touch-target {
+        min-width: 44px;
+        min-height: 44px;
+      }
+    </style>
+  </head>
+  <body class="paper-texture">
+    <div id="root"></div>
+  </body>
+</html>
