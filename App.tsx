@@ -12,12 +12,14 @@ import {
   Sparkles,
   X,
   History,
-  MoreVertical
+  MoreVertical,
+  AlertTriangle
 } from 'lucide-react';
 
 const App: React.FC = () => {
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+  const [sessionToDelete, setSessionToDelete] = useState<string | null>(null);
   const [input, setInput] = useState('');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -25,7 +27,7 @@ const App: React.FC = () => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    const saved = localStorage.getItem('alfaachat_v4_sessions');
+    const saved = localStorage.getItem('alap_v1_sessions');
     if (saved) {
       const parsed = JSON.parse(saved);
       setSessions(parsed);
@@ -37,7 +39,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (sessions.length > 0) {
-      localStorage.setItem('alfaachat_v4_sessions', JSON.stringify(sessions));
+      localStorage.setItem('alap_v1_sessions', JSON.stringify(sessions));
     }
   }, [sessions]);
 
@@ -70,6 +72,7 @@ const App: React.FC = () => {
       if (currentSessionId === id) setCurrentSessionId(filtered[0].id);
       return filtered;
     });
+    setSessionToDelete(null);
   };
 
   const activeSession = sessions.find(s => s.id === currentSessionId) || sessions[0];
@@ -129,6 +132,37 @@ const App: React.FC = () => {
 
   return (
     <div className="flex h-[100dvh] bg-[#FCF8F3] text-[#171717] overflow-hidden relative font-sans">
+      {/* Delete Confirmation Modal */}
+      {sessionToDelete && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white border border-[#E8E2D9] rounded-2xl p-6 md:p-8 max-w-sm w-full shadow-2xl">
+            <div className="flex flex-col items-center text-center">
+              <div className="w-12 h-12 bg-rose-50 rounded-full flex items-center justify-center text-rose-600 mb-4">
+                <AlertTriangle size={24} />
+              </div>
+              <h3 className="text-xl font-bold serif-heading text-[#002147] mb-2">Delete Discussion?</h3>
+              <p className="text-sm text-neutral-500 serif-body leading-relaxed mb-6">
+                This action cannot be undone. All inscriptions in this historical thread will be permanently erased.
+              </p>
+              <div className="flex flex-col w-full gap-2">
+                <button 
+                  onClick={() => deleteSession(sessionToDelete)}
+                  className="w-full py-3 px-4 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl transition-all active:scale-[0.98] shadow-sm touch-target"
+                >
+                  Confirm Deletion
+                </button>
+                <button 
+                  onClick={() => setSessionToDelete(null)}
+                  className="w-full py-3 px-4 bg-white border border-[#E8E2D9] hover:bg-[#F8F5F1] text-neutral-600 font-semibold rounded-xl transition-all active:scale-[0.98] touch-target"
+                >
+                  Retain Discussion
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Sidebar Overlay */}
       {isSidebarOpen && (
         <div 
@@ -149,8 +183,8 @@ const App: React.FC = () => {
               <span className="text-white serif-heading text-xl">A</span>
             </div>
             <div className="flex flex-col">
-              <span className="font-bold text-lg serif-heading text-[#002147] tracking-tight">AlfaaChat</span>
-              <span className="text-[9px] uppercase tracking-widest text-neutral-400 font-bold leading-none mt-1">Intelligence</span>
+              <span className="font-bold text-lg serif-heading text-[#002147] tracking-tight">ALAP</span>
+              <span className="text-[9px] uppercase tracking-widest text-neutral-400 font-bold leading-none mt-1">ALAP Engine</span>
             </div>
           </div>
           <button onClick={() => setIsSidebarOpen(false)} className="touch-target p-2 lg:hidden text-neutral-400 hover:text-neutral-900">
@@ -190,7 +224,7 @@ const App: React.FC = () => {
               <MessageSquare size={16} className={currentSessionId === s.id ? 'text-[#002147]' : 'text-neutral-400'} />
               <span className="truncate flex-1 text-sm font-medium text-neutral-700">{s.title || 'Untitled'}</span>
               <button 
-                onClick={(e) => { e.stopPropagation(); deleteSession(s.id); }}
+                onClick={(e) => { e.stopPropagation(); setSessionToDelete(s.id); }}
                 className="opacity-0 group-hover:opacity-100 p-1 hover:text-rose-600 transition-all touch-target"
               >
                 <Trash2 size={14} />
@@ -203,7 +237,7 @@ const App: React.FC = () => {
           <div className="flex items-center space-x-3 p-3 rounded-lg border border-[#E8E2D9]/50 bg-white shadow-sm">
             <ShieldCheck size={16} className="text-[#002147]" />
             <div className="flex flex-col">
-              <span className="text-[9px] font-bold text-neutral-500 uppercase tracking-widest">Encrypted Core</span>
+              <span className="text-[9px] font-bold text-neutral-500 uppercase tracking-widest">Secured Interface</span>
             </div>
           </div>
         </div>
@@ -226,7 +260,7 @@ const App: React.FC = () => {
             </h2>
             <div className="flex items-center space-x-2 text-[10px] text-neutral-400 font-bold uppercase tracking-widest mt-0.5">
               <Sparkles size={10} className="text-[#C5A059]" />
-              <span className="truncate">Proprietary AI Engine</span>
+              <span className="truncate">ALAP Engine</span>
             </div>
           </div>
           
@@ -242,16 +276,16 @@ const App: React.FC = () => {
               <div className="w-16 h-16 bg-white border border-[#E8E2D9] rounded-2xl flex items-center justify-center shadow-sm mb-8 transform rotate-3">
                 <span className="text-3xl serif-heading text-[#002147]">A</span>
               </div>
-              <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-[#002147] mb-6 serif-heading">Classical Intelligence</h1>
+              <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-[#002147] mb-6 serif-heading">ALAP</h1>
               <p className="text-neutral-500 text-base leading-relaxed mb-10 serif-body max-w-sm">
-                Inscribe your inquiry below for high-fidelity reasoning, refined strategy, and multilingual fluency.
+                A refined intelligence instrument powered by <strong>AlfaaX</strong>.
               </p>
               
               <div className="grid grid-cols-1 gap-3 w-full">
                 {[
-                  "Create a formal project brief",
-                  "বাংলায় অ্যালগরিদম ব্যাখ্যা করো",
-                  "Draft a literary analysis"
+                  "Draft a professional summary",
+                  "বাংলায় একটি কবিতা লেখো",
+                  "Who is your developer?"
                 ].map(text => (
                   <button 
                     key={text}
@@ -269,7 +303,7 @@ const App: React.FC = () => {
                 <div key={msg.id} className="flex flex-col space-y-2 animate-fadeIn px-4 md:px-0">
                   <div className={`flex items-center space-x-2 mb-1 ${msg.role === 'user' ? 'justify-end' : ''}`}>
                     <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-neutral-400">
-                      {msg.role === 'user' ? 'Direct Input' : 'Alfaa Protocol'}
+                      {msg.role === 'user' ? 'Inscribed' : 'ALAP Response'}
                     </span>
                   </div>
                   <div className={`
@@ -310,7 +344,7 @@ const App: React.FC = () => {
                       handleSend();
                     }
                   }}
-                  placeholder="Inscribe your thoughts..."
+                  placeholder="Ask ALAP..."
                   className="w-full bg-transparent border-none focus:ring-0 resize-none py-3 px-3 md:px-4 max-h-40 min-h-[44px] text-neutral-800 placeholder-neutral-400 text-sm md:text-base leading-relaxed"
                   rows={1}
                 />
@@ -334,7 +368,7 @@ const App: React.FC = () => {
             </div>
             <div className="flex items-center justify-center">
               <span className="text-[9px] text-neutral-400 font-bold uppercase tracking-[0.2em] whitespace-nowrap">
-                AlfaaX Proprietary Engine V4.1
+                Justice For Hadi
               </span>
             </div>
           </div>

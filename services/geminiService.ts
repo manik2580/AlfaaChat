@@ -1,6 +1,5 @@
-
 import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
-import { ALFA_CHAT_SYSTEM_PROMPT, MODEL_NAME } from "../constants";
+import { ALAP_SYSTEM_PROMPT, MODEL_NAME } from "../constants";
 import { Message } from "../types";
 
 export const getAlfaaChatResponse = async (
@@ -20,7 +19,7 @@ export const getAlfaaChatResponse = async (
       model: MODEL_NAME,
       contents,
       config: {
-        systemInstruction: ALFA_CHAT_SYSTEM_PROMPT,
+        systemInstruction: ALAP_SYSTEM_PROMPT,
         temperature: 0.8,
         topP: 0.95,
         topK: 40,
@@ -37,7 +36,7 @@ export const getAlfaaChatResponse = async (
     }
     return fullText;
   } catch (error) {
-    console.error("AlfaaChat API Error:", error);
+    console.error("ALAP API Error:", error);
     throw error;
   }
 };
