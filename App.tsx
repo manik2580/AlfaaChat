@@ -16,6 +16,40 @@ import {
   AlertTriangle
 } from 'lucide-react';
 
+// Custom AlfaaX Logo based on the user-provided image
+const AlfaaXLogo = ({ className = "w-6 h-6", strokeColor = "#E8C9A3" }: { className?: string; strokeColor?: string }) => (
+  <svg 
+    viewBox="0 0 1000 1000" 
+    className={className} 
+    fill="none" 
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    {/* Main central diagonal stroke */}
+    <path 
+      d="M320 250 L880 810" 
+      stroke={strokeColor} 
+      strokeWidth="90" 
+      strokeLinecap="round" 
+    />
+    {/* Top-right "corner" strokes */}
+    <path 
+      d="M400 150 L600 350 L920 30" 
+      stroke={strokeColor} 
+      strokeWidth="90" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+    />
+    {/* Bottom-left "corner" strokes */}
+    <path 
+      d="M80 970 L400 650 L650 850" 
+      stroke={strokeColor} 
+      strokeWidth="90" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+    />
+  </svg>
+);
+
 const App: React.FC = () => {
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
@@ -179,8 +213,8 @@ const App: React.FC = () => {
       `}>
         <div className="p-6 flex items-center justify-between border-b border-neutral-100">
           <div className="flex items-center space-x-3">
-            <div className="w-9 h-9 bg-[#002147] rounded-md flex items-center justify-center shadow-sm">
-              <span className="text-white serif-heading text-xl">A</span>
+            <div className="w-10 h-10 bg-[#002147] rounded-lg flex items-center justify-center shadow-sm p-1.5">
+              <AlfaaXLogo className="w-full h-full" strokeColor="#E8C9A3" />
             </div>
             <div className="flex flex-col">
               <span className="font-bold text-lg serif-heading text-[#002147] tracking-tight">ALAP</span>
@@ -273,8 +307,8 @@ const App: React.FC = () => {
         <div ref={scrollRef} className="flex-1 overflow-y-auto px-0 md:px-4 py-6 space-y-8 scroll-smooth z-10 custom-scrollbar">
           {activeSession?.messages.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center max-w-lg mx-auto py-12 px-6">
-              <div className="w-16 h-16 bg-white border border-[#E8E2D9] rounded-2xl flex items-center justify-center shadow-sm mb-8 transform rotate-3">
-                <span className="text-3xl serif-heading text-[#002147]">A</span>
+              <div className="w-20 h-20 bg-white border border-[#E8E2D9] rounded-2xl flex items-center justify-center shadow-sm mb-8 transform rotate-3 p-4">
+                <AlfaaXLogo className="w-full h-full" strokeColor="#002147" />
               </div>
               <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-[#002147] mb-6 serif-heading">ALAP</h1>
               <p className="text-neutral-500 text-base leading-relaxed mb-10 serif-body max-w-sm">
