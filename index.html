@@ -41,6 +41,7 @@
         color: var(--charcoal);
         overflow: hidden;
         overscroll-behavior-y: none;
+        -webkit-tap-highlight-color: transparent;
       }
       .serif-heading {
         font-family: 'Playfair Display', serif;
@@ -52,9 +53,15 @@
         background-color: var(--ivory);
         background-image: url("https://www.transparenttextures.com/patterns/soft-wallpaper.png");
       }
-      /* Prevent zoom on input focus for iOS */
-      input, textarea {
+      /* Prevent zoom and suppress focus outlines */
+      input, textarea, button, [role="button"] {
         font-size: 16px !important;
+        outline: none !important;
+        -webkit-tap-highlight-color: transparent;
+      }
+      input:focus, textarea:focus {
+        outline: none !important;
+        box-shadow: none !important;
       }
       ::-webkit-scrollbar {
         width: 4px;

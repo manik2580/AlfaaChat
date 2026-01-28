@@ -1,3 +1,4 @@
+
 import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
 import { ALAP_SYSTEM_PROMPT, MODEL_NAME } from "../constants";
 import { Message } from "../types";
@@ -35,8 +36,14 @@ export const getAlfaaChatResponse = async (
       }
     }
     return fullText;
-  } catch (error) {
+  } catch (error: any) {
     console.error("ALAP API Error:", error);
+    
+    // Check for quota exceeded error specifically
+    if (error?.message?.includes('quota') || error?.message?.includes('429')) {
+      throw new Error("QUOTA_EXHAUSTED");
+    }
+    
     throw error;
   }
 };

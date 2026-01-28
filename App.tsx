@@ -13,7 +13,8 @@ import {
   X,
   History,
   MoreVertical,
-  AlertTriangle
+  AlertTriangle,
+  ArrowUp
 } from 'lucide-react';
 
 // Custom AlfaaX Logo based on the user-provided image
@@ -149,12 +150,18 @@ const App: React.FC = () => {
             : s
         ));
       });
-    } catch (err) {
+    } catch (err: any) {
+      let errorMessage = "Protocol interruption: Please verify your connection and re-send.";
+      
+      if (err?.message === "QUOTA_EXHAUSTED") {
+        errorMessage = "System Quota Exhausted: You have reached the engine's current limit. Please wait a moment before attempting another inscription.";
+      }
+
       setSessions(prev => prev.map(s => 
         s.id === currentSessionId 
           ? { 
               ...s, 
-              messages: s.messages.map(m => m.id === assistantMessageId ? { ...m, content: "Protocol interruption: Please verify your connection and re-send." } : m) 
+              messages: s.messages.map(m => m.id === assistantMessageId ? { ...m, content: errorMessage } : m) 
             } 
           : s
       ));
@@ -208,17 +215,18 @@ const App: React.FC = () => {
       {/* Classical Sidebar */}
       <aside className={`
         fixed inset-y-0 left-0 z-50 w-72 lg:static lg:block
-        transition-transform duration-300 ease-in-out bg-white border-r border-[#E8E2D9] flex flex-col
+        transition-transform duration-300 ease-in-out bg-white border-r border-[#E8E2D9] flex flex-col h-screen lg:h-[100dvh]
         ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
-        <div className="p-6 flex items-center justify-between border-b border-neutral-100">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-[#002147] rounded-lg flex items-center justify-center shadow-sm p-1.5">
+        {/* Header Section (Fixed Height) */}
+        <div className="flex-none p-6 flex items-center justify-between border-b border-neutral-100">
+          <div className="flex items-center space-x-3 min-w-0">
+            <div className="w-10 h-10 bg-[#002147] rounded-lg flex items-center justify-center shadow-sm p-1.5 flex-none">
               <AlfaaXLogo className="w-full h-full" strokeColor="#E8C9A3" />
             </div>
-            <div className="flex flex-col">
-              <span className="font-bold text-lg serif-heading text-[#002147] tracking-tight">ALAP</span>
-              <span className="text-[9px] uppercase tracking-widest text-neutral-400 font-bold leading-none mt-1">ALAP Engine</span>
+            <div className="flex flex-col min-w-0">
+              <span className="font-bold text-lg serif-heading text-[#002147] tracking-tight truncate">ALAP</span>
+              <span className="text-[9px] uppercase tracking-widest text-neutral-400 font-bold leading-none mt-1 truncate">ALAP Engine</span>
             </div>
           </div>
           <button onClick={() => setIsSidebarOpen(false)} className="touch-target p-2 lg:hidden text-neutral-400 hover:text-neutral-900">
@@ -226,7 +234,8 @@ const App: React.FC = () => {
           </button>
         </div>
 
-        <div className="p-5">
+        {/* Action Button Section (Fixed Height) */}
+        <div className="flex-none p-5">
           <button 
             onClick={createNewSession}
             className="w-full py-3 px-4 bg-white border border-[#E8E2D9] hover:bg-[#F8F5F1] rounded-lg flex items-center justify-center space-x-2 transition-all shadow-sm active:scale-[0.98] text-[#002147] font-semibold text-sm touch-target"
@@ -236,38 +245,42 @@ const App: React.FC = () => {
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-4 space-y-1 pb-6 scrollbar-hide">
-          <div className="flex items-center space-x-2 px-2 py-4">
+        {/* Scrollable Historical Threads (Flex-1 + min-h-0 triggers scroll on inner content) */}
+        <div className="flex-1 min-h-0 flex flex-col">
+          <div className="flex-none flex items-center space-x-2 px-6 py-4 sticky top-0 bg-white z-10 border-b border-transparent">
             <History size={14} className="text-neutral-400" />
             <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Historical Threads</span>
           </div>
-          {sessions.map(s => (
-            <div 
-              key={s.id}
-              onClick={() => {
-                setCurrentSessionId(s.id);
-                if (window.innerWidth < 1024) setIsSidebarOpen(false);
-              }}
-              className={`
-                group relative p-3 rounded-lg cursor-pointer flex items-center space-x-3 transition-all
-                ${currentSessionId === s.id 
-                  ? 'bg-[#F3EFE9] border border-[#E8E2D9]' 
-                  : 'hover:bg-[#F8F5F1] border border-transparent'}
-              `}
-            >
-              <MessageSquare size={16} className={currentSessionId === s.id ? 'text-[#002147]' : 'text-neutral-400'} />
-              <span className="truncate flex-1 text-sm font-medium text-neutral-700">{s.title || 'Untitled'}</span>
-              <button 
-                onClick={(e) => { e.stopPropagation(); setSessionToDelete(s.id); }}
-                className="opacity-0 group-hover:opacity-100 p-1 hover:text-rose-600 transition-all touch-target"
+          <div className="flex-1 overflow-y-auto px-4 space-y-1 pb-10 custom-scrollbar">
+            {sessions.map(s => (
+              <div 
+                key={s.id}
+                onClick={() => {
+                  setCurrentSessionId(s.id);
+                  if (window.innerWidth < 1024) setIsSidebarOpen(false);
+                }}
+                className={`
+                  group relative p-3 rounded-lg cursor-pointer flex items-center space-x-3 transition-all
+                  ${currentSessionId === s.id 
+                    ? 'bg-[#F3EFE9] border border-[#E8E2D9]' 
+                    : 'hover:bg-[#F8F5F1] border border-transparent'}
+                `}
               >
-                <Trash2 size={14} />
-              </button>
-            </div>
-          ))}
+                <MessageSquare size={16} className={currentSessionId === s.id ? 'text-[#002147]' : 'text-neutral-400'} />
+                <span className="truncate flex-1 text-sm font-medium text-neutral-700">{s.title || 'Untitled'}</span>
+                <button 
+                  onClick={(e) => { e.stopPropagation(); setSessionToDelete(s.id); }}
+                  className={`p-1 hover:text-rose-600 transition-all touch-target md:opacity-0 md:group-hover:opacity-100 ${window.innerWidth < 768 ? 'opacity-100' : ''}`}
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
 
-        <div className="p-6 border-t border-neutral-100 bg-[#F8F5F1]/30">
+        {/* Footer Section (Fixed Height) */}
+        <div className="flex-none p-6 border-t border-neutral-100 bg-[#F8F5F1]/30">
           <div className="flex items-center space-x-3 p-3 rounded-lg border border-[#E8E2D9]/50 bg-white shadow-sm">
             <ShieldCheck size={16} className="text-[#002147]" />
             <div className="flex flex-col">
@@ -364,10 +377,14 @@ const App: React.FC = () => {
         </div>
 
         {/* Control Center (Fixed Bottom) */}
-        <div className="px-4 py-4 md:py-6 bg-white/70 backdrop-blur-md border-t border-[#E8E2D9] z-30">
-          <div className="max-w-3xl mx-auto flex flex-col space-y-3">
-            <div className="relative group bg-white border border-[#E8E2D9] rounded-2xl shadow-sm transition-all focus-within:border-neutral-400">
-              <div className="flex items-end p-2 md:p-3">
+        <div className="px-4 py-4 md:py-6 bg-[#FCF8F3]/80 backdrop-blur-xl border-t border-[#E8E2D9] z-30">
+          <div className="max-w-4xl mx-auto flex flex-col space-y-3">
+            <div className={`
+              relative group bg-white border rounded-[28px] shadow-sm transition-all duration-300 ease-out flex flex-col pb-2
+              ${input.trim() ? 'border-[#002147]/40' : 'border-[#E8E2D9]'}
+              focus-within:border-[#002147]/50 focus-within:shadow-md
+            `}>
+              <div className="flex items-end p-2 md:p-2.5">
                 <textarea
                   ref={textareaRef}
                   value={input}
@@ -378,32 +395,40 @@ const App: React.FC = () => {
                       handleSend();
                     }
                   }}
-                  placeholder="Ask ALAP..."
-                  className="w-full bg-transparent border-none focus:ring-0 resize-none py-3 px-3 md:px-4 max-h-40 min-h-[44px] text-neutral-800 placeholder-neutral-400 text-sm md:text-base leading-relaxed"
+                  placeholder="Ask ALAP anything..."
+                  className="w-full bg-transparent border-none outline-none focus:outline-none focus:ring-0 resize-none py-3.5 px-4 md:px-5 max-h-48 min-h-[52px] text-neutral-800 placeholder-neutral-400 text-[15px] leading-relaxed scrollbar-hide"
                   rows={1}
+                  style={{ height: input.split('\n').length > 1 ? 'auto' : '52px' }}
                 />
-                <button 
-                  onClick={handleSend}
-                  disabled={!input.trim() || isLoading}
-                  className={`
-                    mb-1 touch-target p-3 rounded-xl transition-all flex items-center justify-center
-                    ${!input.trim() || isLoading 
-                      ? 'text-neutral-200' 
-                      : 'text-white bg-[#002147] hover:bg-neutral-900 active:scale-95 shadow-md'}
-                  `}
-                >
-                  {isLoading ? (
-                    <div className="w-5 h-5 border-2 border-neutral-100 border-t-[#002147] rounded-full animate-spin"></div>
-                  ) : (
-                    <Send size={20} />
-                  )}
-                </button>
+                
+                <div className="flex items-center pb-1.5 pr-1.5">
+                  <button 
+                    onClick={handleSend}
+                    disabled={!input.trim() || isLoading}
+                    className={`
+                      relative touch-target w-10 h-10 md:w-11 md:h-11 rounded-full transition-all duration-300 flex items-center justify-center overflow-hidden
+                      ${!input.trim() || isLoading 
+                        ? 'bg-neutral-100 text-neutral-300' 
+                        : 'bg-[#002147] text-white hover:bg-black active:scale-[0.9] shadow-lg hover:shadow-[#002147]/20'}
+                    `}
+                  >
+                    {isLoading ? (
+                      <div className="w-5 h-5 border-[2.5px] border-white/30 border-t-white rounded-full animate-spin"></div>
+                    ) : (
+                      <ArrowUp size={22} strokeWidth={2.5} className={input.trim() ? 'animate-in fade-in zoom-in duration-300' : ''} />
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
-            <div className="flex items-center justify-center">
-              <span className="text-[9px] text-neutral-400 font-bold uppercase tracking-[0.2em] whitespace-nowrap">
-                Justice For Hadi
-              </span>
+            
+            <div className="flex items-center justify-center pb-2">
+              <div className="flex items-center space-x-2 px-3 py-1 rounded-full bg-white/50 border border-[#E8E2D9]/40 backdrop-blur-sm">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span className="text-[9px] text-[#002147]/60 font-bold uppercase tracking-[0.2em]">
+                  Justice For Hadi
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -427,6 +452,16 @@ const App: React.FC = () => {
         textarea {
           -webkit-appearance: none;
           appearance: none;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background-color: rgba(0, 33, 71, 0.2);
+          border-radius: 20px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background-color: rgba(0, 33, 71, 0.35);
         }
       `}</style>
     </div>
